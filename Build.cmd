@@ -75,7 +75,7 @@ PUSHD "%1"
         CL "..\Solution.cpp" /DDEBUG /FC /MTd /Od /Oi /std:c++latest /W4 /wd4100 /wd4127 /wd4189 /wd4201 /wd4702 /WX /Z7 /link /INCREMENTAL:NO
     POPD
 
-    IF %ERRORLEVEL% EQU 0 (
+    IF "%ERRORLEVEL%" == "0" (
         CLS
         CALL ".bin\Solution.exe"
     )

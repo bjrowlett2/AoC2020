@@ -11,38 +11,37 @@ struct Input_t {
     Int64_t Length;
 };
 
-inline Input_t LoadInput(Char_t const* Path) {
+inline Bool_t LoadInput(Input_t* Input, Char_t const* Path) {
+    Assert(Input != NULL);
+
     FILE* File = NULL;
     if (fopen_s(&File, Path, "r") != 0) {
-        exit(EXIT_FAILURE);
+        return false;
     }
 
     if (fseek(File, 0, SEEK_END) != 0) {
-        exit(EXIT_FAILURE);
+        return false;
     }
 
     Int64_t FileSize = ftell(File);
     if (fseek(File, 0, SEEK_SET) != 0) {
-        exit(EXIT_FAILURE);
+        return false;
     }
 
     Char_t* Buffer = new Char_t[FileSize]; // @MemoryLeak
     Int64_t BytesRead = fread(Buffer, sizeof(Char_t), FileSize, File);
 
     if (ferror(File) != 0) {
-        exit(EXIT_FAILURE);
+        return false;
     }
 
     if (fclose(File) != 0) {
-        exit(EXIT_FAILURE);
+        return false;
     }
 
-    Input_t Input = {
-        .Data = Buffer,
-        .Length = BytesRead
-    };
-
-    return Input;
+    Input->Data = Buffer;
+    Input->Length = BytesRead;
+    return true;
 }
 
 #endif // Advent_Input_h
