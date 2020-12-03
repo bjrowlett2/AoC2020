@@ -10,7 +10,7 @@ struct Day01_t {
 
 Int64_t SolvePart1(Day01_t* Day) {
     for (Int32_t i = 0; i < Day->Count; ++i) {
-        for (Int32_t j = i + 1; j < Day->Count; ++j) {
+        for (Int32_t j = i; j < Day->Count; ++j) {
             if (Day->Entries[i] + Day->Entries[j] == 2020) {
                 return Day->Entries[i] * Day->Entries[j];
             }
@@ -22,8 +22,8 @@ Int64_t SolvePart1(Day01_t* Day) {
 
 Int64_t SolvePart2(Day01_t* Day) {
     for (Int32_t i = 0; i < Day->Count; ++i) {
-        for (Int32_t j = i + 1; j < Day->Count; ++j) {
-            for (Int32_t k = j + 1; k < Day->Count; ++k) {
+        for (Int32_t j = i; j < Day->Count; ++j) {
+            for (Int32_t k = j; k < Day->Count; ++k) {
                 if (Day->Entries[i] + Day->Entries[j] + Day->Entries[k] == 2020) {
                     return Day->Entries[i] * Day->Entries[j] * Day->Entries[k];
                 }
