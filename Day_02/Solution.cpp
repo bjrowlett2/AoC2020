@@ -54,16 +54,6 @@ Int64_t SolvePart2(Day02_t* Day) {
     return ValidPasswords;
 }
 
-Bool_t IsDigit(Char_t Value) {
-    return ('0' <= Value)
-        && (Value <= '9');
-}
-
-Bool_t IsLetter(Char_t Value) {
-    return ('a' <= Value)
-        && (Value <= 'z');
-}
-
 Bool_t ParseChar(Char_t** String, Char_t* Value) {
     Char_t* Search = *String;
     if (!IsLetter(Search[0])) {
