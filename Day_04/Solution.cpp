@@ -38,19 +38,19 @@ Int64_t SolvePart1(Day04_t* Day) {
         for (Int32_t j = 0; j < Passport->Count; ++j) {
             Field_t* Field = &Passport->Fields[j];
 
-            if (StringsMatch(Field->Name, "byr")) {
+            if (StringEquals(Field->Name, "byr")) {
                 FieldMask |= BYR_BIT;
-            } else if (StringsMatch(Field->Name, "iyr")) {
+            } else if (StringEquals(Field->Name, "iyr")) {
                 FieldMask |= IYR_BIT;
-            } else if (StringsMatch(Field->Name, "eyr")) {
+            } else if (StringEquals(Field->Name, "eyr")) {
                 FieldMask |= EYR_BIT;
-            } else if (StringsMatch(Field->Name, "hgt")) {
+            } else if (StringEquals(Field->Name, "hgt")) {
                 FieldMask |= HGT_BIT;
-            } else if (StringsMatch(Field->Name, "hcl")) {
+            } else if (StringEquals(Field->Name, "hcl")) {
                 FieldMask |= HCL_BIT;
-            } else if (StringsMatch(Field->Name, "ecl")) {
+            } else if (StringEquals(Field->Name, "ecl")) {
                 FieldMask |= ECL_BIT;
-            } else if (StringsMatch(Field->Name, "pid")) {
+            } else if (StringEquals(Field->Name, "pid")) {
                 FieldMask |= PID_BIT;
             }
         }
@@ -78,42 +78,42 @@ Int64_t SolvePart2(Day04_t* Day) {
         for (Int32_t j = 0; j < Passport->Count; ++j) {
             Field_t* Field = &Passport->Fields[j];
 
-            if (StringsMatch(Field->Name, "byr")) {
+            if (StringEquals(Field->Name, "byr")) {
                 if (StringLength(Field->Value) == BYR_LENGTH) {
                     Int32_t Year = atoi(Field->Value);
                     if ((1920 <= Year) && (Year <= 2002)) {
                         FieldMask |= BYR_BIT;
                     }
                 }
-            } else if (StringsMatch(Field->Name, "iyr")) {
+            } else if (StringEquals(Field->Name, "iyr")) {
                 if (StringLength(Field->Value) == IYR_LENGTH) {
                     Int32_t Year = atoi(Field->Value);
                     if ((2010 <= Year) && (Year <= 2020)) {
                         FieldMask |= IYR_BIT;
                     }
                 }
-            } else if (StringsMatch(Field->Name, "eyr")) {
+            } else if (StringEquals(Field->Name, "eyr")) {
                 if (StringLength(Field->Value) == EYR_LENGTH) {
                     Int32_t Year = atoi(Field->Value);
                     if ((2020 <= Year) && (Year <= 2030)) {
                         FieldMask |= EYR_BIT;
                     }
                 }
-            } else if (StringsMatch(Field->Name, "hgt")) {
+            } else if (StringEquals(Field->Name, "hgt")) {
                 Int32_t Length = 0;
                 while (IsDigit(Field->Value[Length])) {
                     Length += 1;
                 }
 
                 Char_t* Units = &Field->Value[Length];
-                if (StringsMatch(Units, "cm")) {
+                if (StringEquals(Units, "cm")) {
                     Field->Value[Length] = NULL; // @Cleanup
 
                     Int32_t Height = atoi(Field->Value);
                     if ((150 <= Height) && (Height <= 193)) {
                         FieldMask |= HGT_BIT;
                     }
-                } else if (StringsMatch(Units, "in")) {
+                } else if (StringEquals(Units, "in")) {
                     Field->Value[Length] = NULL; // @Cleanup
 
                     Int32_t Height = atoi(Field->Value);
@@ -121,7 +121,7 @@ Int64_t SolvePart2(Day04_t* Day) {
                         FieldMask |= HGT_BIT;
                     }
                 }
-            } else if (StringsMatch(Field->Name, "hcl")) {
+            } else if (StringEquals(Field->Name, "hcl")) {
                 if (StringLength(Field->Value) == HCL_LENGTH) {
                     if (Field->Value[0] == '#') {
                         FieldMask |= HCL_BIT;
@@ -133,23 +133,23 @@ Int64_t SolvePart2(Day04_t* Day) {
                         }
                     }
                 }
-            } else if (StringsMatch(Field->Name, "ecl")) {
-                if (StringsMatch(Field->Value, "amb")) {
+            } else if (StringEquals(Field->Name, "ecl")) {
+                if (StringEquals(Field->Value, "amb")) {
                     FieldMask |= ECL_BIT;
-                } else if (StringsMatch(Field->Value, "blu")) {
+                } else if (StringEquals(Field->Value, "blu")) {
                     FieldMask |= ECL_BIT;
-                } else if (StringsMatch(Field->Value, "brn")) {
+                } else if (StringEquals(Field->Value, "brn")) {
                     FieldMask |= ECL_BIT;
-                } else if (StringsMatch(Field->Value, "gry")) {
+                } else if (StringEquals(Field->Value, "gry")) {
                     FieldMask |= ECL_BIT;
-                } else if (StringsMatch(Field->Value, "grn")) {
+                } else if (StringEquals(Field->Value, "grn")) {
                     FieldMask |= ECL_BIT;
-                } else if (StringsMatch(Field->Value, "hzl")) {
+                } else if (StringEquals(Field->Value, "hzl")) {
                     FieldMask |= ECL_BIT;
-                } else if (StringsMatch(Field->Value, "oth")) {
+                } else if (StringEquals(Field->Value, "oth")) {
                     FieldMask |= ECL_BIT;
                 }
-            } else if (StringsMatch(Field->Name, "pid")) {
+            } else if (StringEquals(Field->Name, "pid")) {
                 if (StringLength(Field->Value) == PID_LENGTH) {
                     FieldMask |= PID_BIT;
                     for (Int32_t z = 0; z < PID_LENGTH; ++z) {

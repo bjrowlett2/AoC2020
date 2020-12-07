@@ -25,7 +25,7 @@ Int64_t StringLength(Char_t const* A) {
     return Length;
 }
 
-Bool_t StringsMatch(Char_t const* A, Char_t const* B) {
+Bool_t StringEquals(Char_t const* A, Char_t const* B) {
     if (A && B) {
         while (*A && *B && (*A == *B)) {
             A += 1;
@@ -33,6 +33,19 @@ Bool_t StringsMatch(Char_t const* A, Char_t const* B) {
         }
 
         return (*A == NULL) && (*B == NULL);
+    }
+
+    return false;
+}
+
+Bool_t StringStartsWith(Char_t const* A, Char_t const* B) {
+    if (A && B) {
+        while (*A && *B && (*A == *B)) {
+            A += 1;
+            B += 1;
+        }
+
+        return (*B == NULL);
     }
 
     return false;
