@@ -1,21 +1,23 @@
 #include <cstdio>
 #include <Advent.h>
 
+#define MAX_ANSWER_LENGTH 32
+
 struct Member_t {
-    Char_t* Answers;
+    Char_t Answers[MAX_ANSWER_LENGTH];
 };
 
 #define MAX_MEMBER_COUNT 16
 
 struct Group_t {
-    Int32_t Count;
+    Int64_t NumMembers;
     Member_t Members[MAX_MEMBER_COUNT];
 };
 
 #define MAX_GROUP_COUNT 1024
 
 struct Day06_t {
-    Int32_t Count;
+    Int64_t NumGroups;
     Group_t Groups[MAX_GROUP_COUNT];
 };
 
@@ -23,20 +25,20 @@ struct Day06_t {
 
 Int64_t SolvePart1(Day06_t* Day) {
     Int64_t TotalCount = 0;
-    for (Int32_t GroupIndex = 0; GroupIndex < Day->Count; ++GroupIndex) {
-        Group_t* Group = &Day->Groups[GroupIndex];
+    for (Int64_t i = 0; i < Day->NumGroups; ++i) {
+        Group_t* Group = &Day->Groups[i];
 
         Bool_t Questions[QUESTION_COUNT] = {};
-        for (Int32_t MemberIndex = 0; MemberIndex < Group->Count; ++MemberIndex) {
-            Member_t* Member = &Group->Members[MemberIndex];
+        for (Int64_t j = 0; j < Group->NumMembers; ++j) {
+            Member_t* Member = &Group->Members[j];
 
             for (Char_t* At = Member->Answers; *At != NULL; ++At) {
                 Questions[*At - 'a'] = true;
             }
         }
 
-        for (Int32_t QuestionIndex = 0; QuestionIndex < QUESTION_COUNT; ++QuestionIndex) {
-            if (Questions[QuestionIndex]) {
+        for (Int64_t j = 0; j < QUESTION_COUNT; ++j) {
+            if (Questions[j]) {
                 TotalCount += 1;
             }
         }
@@ -47,8 +49,8 @@ Int64_t SolvePart1(Day06_t* Day) {
 
 Int64_t SolvePart2(Day06_t* Day) {
     Int64_t TotalCount = 0;
-    for (Int32_t GroupIndex = 0; GroupIndex < Day->Count; ++GroupIndex) {
-        Group_t* Group = &Day->Groups[GroupIndex];
+    for (Int64_t i = 0; i < Day->NumGroups; ++i) {
+        Group_t* Group = &Day->Groups[i];
 
         Bool_t Questions[QUESTION_COUNT] = {};
         Member_t* FirstMember = &Group->Members[0];
@@ -56,25 +58,25 @@ Int64_t SolvePart2(Day06_t* Day) {
             Questions[*At - 'a'] = true;
         }
         
-        for (Int32_t MemberIndex = 1; MemberIndex < Group->Count; ++MemberIndex) {
-            Member_t* Member = &Group->Members[MemberIndex];
+        for (Int64_t j = 1; j < Group->NumMembers; ++j) {
+            Member_t* Member = &Group->Members[j];
 
-            for (Int32_t QuestionIndex = 0; QuestionIndex < QUESTION_COUNT; ++QuestionIndex) {
+            for (Int64_t k = 0; k < QUESTION_COUNT; ++k) {
                 Bool_t Found = false;
                 for (Char_t* At = Member->Answers; *At != NULL; ++At) {
-                    if ((*At - 'a') == QuestionIndex) {
+                    if ((*At - 'a') == k) {
                         Found = true;
                     }
                 }
 
                 if (!Found) {
-                    Questions[QuestionIndex] = false;
+                    Questions[k] = false;
                 }
             }
         }
 
-        for (Int32_t QuestionIndex = 0; QuestionIndex < QUESTION_COUNT; ++QuestionIndex) {
-            if (Questions[QuestionIndex]) {
+        for (Int64_t j = 0; j < QUESTION_COUNT; ++j) {
+            if (Questions[j]) {
                 TotalCount += 1;
             }
         }
@@ -89,37 +91,33 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         return EXIT_FAILURE;
     }
 
-    Day06_t Day06 = {};
-    Group_t NewGroup = {};
-    Member_t NewMember = {};
-    Char_t* Search = &Input.Data[0];
-    for (Int32_t i = 0; i < Input.Length; ++i) {
-        if (Input.Data[i] == '\n') {
-            Input.Data[i] = NULL;
+    Day06_t Day = {};
+    Int64_t Offset = 0;
+    while (Offset < Input.Length) {
+        if (Offset == 0) {
+            Day.NumGroups += 1;
+            Assert(Day.NumGroups <= MAX_GROUP_COUNT);
+        } else if (Input.Data[Offset] == '\n') {
+            Day.NumGroups += 1;
+            Assert(Day.NumGroups <= MAX_GROUP_COUNT);
 
-            NewMember.Answers = Search;
-
-            NewGroup.Count += 1;
-            Assert(NewGroup.Count <= MAX_MEMBER_COUNT);
-            NewGroup.Members[NewGroup.Count - 1] = NewMember;
-            Search = &Input.Data[i + 1];
-
-            if ((i == (Input.Length - 1)) || (Input.Data[i + 1] == '\n')) {
-                i += 1;
-                Search = &Input.Data[i + 1];
-
-                Day06.Count += 1;
-                Assert(Day06.Count <= MAX_GROUP_COUNT);
-                Day06.Groups[Day06.Count - 1] = NewGroup;
-
-                NewGroup = {};
-                NewMember = {};
-            }
+            Offset += 1; // Eat the newline.
         }
+
+        Group_t* Group = &Day.Groups[Day.NumGroups - 1];
+
+        Group->NumMembers += 1;
+        Assert(Group->NumMembers <= MAX_MEMBER_COUNT);
+        Member_t* Member = &Group->Members[Group->NumMembers - 1];
+
+        Int64_t AnswerLength = 0;
+        Offset += ScanForString(Input.Data + Offset, MAX_ANSWER_LENGTH, Member->Answers, &AnswerLength);
+
+        Offset += 1; // Eat the newline.
     }
 
-    printf("Part 1: %lld\n", SolvePart1(&Day06));
-    printf("Part 2: %lld\n", SolvePart2(&Day06));
+    printf("Part 1: %lld\n", SolvePart1(&Day));
+    printf("Part 2: %lld\n", SolvePart2(&Day));
 
     return EXIT_SUCCESS;
 }

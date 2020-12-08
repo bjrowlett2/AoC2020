@@ -11,7 +11,7 @@ struct Input_t {
     Int64_t Length;
 };
 
-inline Bool_t LoadInput(Input_t* Input, Char_t const* Path) {
+Bool_t LoadInput(Input_t* Input, Char_t const* Path) {
     Assert(Input != NULL);
 
     FILE* File = NULL;

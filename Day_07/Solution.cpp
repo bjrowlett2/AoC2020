@@ -1,30 +1,35 @@
 #include <cstdio>
 #include <Advent.h>
 
+#define MAX_COLOR_LENGTH 24
+
 struct Content_t {
-    Char_t* Color;
-    Int32_t Quantity;
+    Int64_t Quantity;
+
+    Int64_t ColorLength;
+    Char_t Color[MAX_COLOR_LENGTH];
 };
 
 #define MAX_CONTENT_COUNT 8
 
 struct Rule_t {
-    Char_t* Color;
+    Int64_t ColorLength;
+    Char_t Color[MAX_COLOR_LENGTH];
 
-    Int32_t Count;
+    Int64_t NumContents;
     Content_t Contents[MAX_CONTENT_COUNT];
 };
 
 #define MAX_RULE_COUNT 1024
 
 struct Day07_t {
-    Int32_t Count;
+    Int64_t NumRules;
     Rule_t Rules[MAX_RULE_COUNT];
 };
 
 Bool_t FindRule(Day07_t* Day, Rule_t** Result, Char_t const* Color) {
-    for (Int32_t RuleIndex = 0; RuleIndex < Day->Count; ++RuleIndex) {
-        Rule_t* Rule = &Day->Rules[RuleIndex];
+    for (Int64_t i = 0; i < Day->NumRules; ++i) {
+        Rule_t* Rule = &Day->Rules[i];
 
         if (StringEquals(Color, Rule->Color)) {
             *Result = Rule;
@@ -36,8 +41,8 @@ Bool_t FindRule(Day07_t* Day, Rule_t** Result, Char_t const* Color) {
 }
 
 Bool_t CanContainBag(Day07_t* Day, Rule_t* Rule, Char_t const* Color) {
-    for (Int32_t ContentIndex = 0; ContentIndex < Rule->Count; ++ContentIndex) {
-        Content_t* Content = &Rule->Contents[ContentIndex];
+    for (Int64_t i = 0; i < Rule->NumContents; ++i) {
+        Content_t* Content = &Rule->Contents[i];
 
         if (StringEquals(Color, Content->Color)) {
             return true;
@@ -56,8 +61,8 @@ Bool_t CanContainBag(Day07_t* Day, Rule_t* Rule, Char_t const* Color) {
 
 Int64_t SolvePart1(Day07_t* Day) {
     Int64_t NumBags = 0;
-    for (Int32_t RuleIndex = 0; RuleIndex < Day->Count; ++RuleIndex) {
-        Rule_t* Rule = &Day->Rules[RuleIndex];
+    for (Int64_t i = 0; i < Day->NumRules; ++i) {
+        Rule_t* Rule = &Day->Rules[i];
 
         if (CanContainBag(Day, Rule, "shiny gold")) {
             NumBags += 1;
@@ -69,8 +74,8 @@ Int64_t SolvePart1(Day07_t* Day) {
 
 Int64_t CountNestedBags(Day07_t* Day, Rule_t* Rule) {
     Int64_t Count = 1;
-    for (Int32_t ContentIndex = 0; ContentIndex < Rule->Count; ++ContentIndex) {
-        Content_t* Content = &Rule->Contents[ContentIndex];
+    for (Int64_t i = 0; i < Rule->NumContents; ++i) {
+        Content_t* Content = &Rule->Contents[i];
 
         Rule_t* Next = NULL;
         if (FindRule(Day, &Next, Content->Color)) {
@@ -90,33 +95,22 @@ Int64_t SolvePart2(Day07_t* Day) {
     Panic("No solution found.");
 }
 
-Char_t* ReadColor(Char_t** Line) {
-    Int32_t Spaces = 0;
-    Char_t* Search = *Line;
-    for (Char_t* At = Search; *At != NULL; ++At) {
-        if (*At == ' ') {
+Int64_t ScanForColor(Char_t* Buffer, Int64_t BufferLength, Char_t* Value, Int64_t* Length) {
+    Int64_t Spaces = 0;
+    for (Int64_t Index = 0; Index < BufferLength-1; ++Index) {
+        if (Buffer[Index] == ' ') {
             Spaces += 1;
             if (Spaces == 2) {
-                *At = NULL;
-                *Line = At + 1;
-                return Search;
+                *Length = Index;
+                return Index;
             }
+            
         }
+
+        Value[Index] = Buffer[Index];
     }
 
-    Panic("No color found.");
-}
-
-Int32_t ReadQuantity(Char_t** Line) {
-    Char_t* Start = *Line;
-    Char_t* Search = *Line;
-    while (IsDigit(*Search)) {
-        Search += 1;
-    }
-
-    *Search = NULL;
-    *Line = Search + 1;
-    return atoi(Start);
+    Panic("Could not find a color.");
 }
 
 Int32_t main(Int32_t Argc, Char_t* Argv[]) {
@@ -125,49 +119,48 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         return EXIT_FAILURE;
     }
 
-    Day07_t Day07 = {};
-    Char_t* Search = &Input.Data[0];
-    for (Int32_t i = 0; i < Input.Length; ++i) {
-        if (Input.Data[i] == '\n') {
-            Input.Data[i] = NULL;
+    Day07_t Day = {};
+    Int64_t Offset = 0;
+    while (Offset < Input.Length) {
+        Day.NumRules += 1;
+        Assert(Day.NumRules <= MAX_RULE_COUNT);
+        Rule_t* Rule = &Day.Rules[Day.NumRules - 1];
 
-            Rule_t NewRule = {};
-            NewRule.Color = ReadColor(&Search);
-            Search += StringLength("bags contain ");
+        Offset += ScanForColor(Input.Data + Offset, MAX_COLOR_LENGTH, Rule->Color, &Rule->ColorLength);
 
-            while (*Search != NULL) {
-                if (StringStartsWith(Search, "no other bags.")) {
-                    Search += StringLength("no other bags.");
-                } else {
-                    Content_t NewContent = {};
-                    NewContent.Quantity = ReadQuantity(&Search);
-                    NewContent.Color = ReadColor(&Search);
+        Offset += 14; // Eat the " bags contain ".
 
-                    NewRule.Count += 1;
-                    Assert(NewRule.Count <= MAX_CONTENT_COUNT);
-                    NewRule.Contents[NewRule.Count - 1] = NewContent;
-
-                    while ((*Search != ',') && (*Search != '.')) {
-                        Search += 1;
-                    }
-
-                    Search += 1;
-                    if (*Search == ' ') {
-                        Search += 1;
-                    }
-                }
+        while (Input.Data[Offset] != '\n') {
+            if (StringStartsWith(Input.Data +Offset, "no other bags.")) {
+                Offset += 14; // Eat the "no other bags."
+                break;
             }
 
-            Day07.Count += 1;
-            Assert(Day07.Count <= MAX_RULE_COUNT);
-            Day07.Rules[Day07.Count - 1] = NewRule;
+            Rule->NumContents += 1;
+            Assert(Rule->NumContents <= MAX_CONTENT_COUNT);
+            Content_t* Content = &Rule->Contents[Rule->NumContents - 1];
 
-            Search = &Input.Data[i + 1];
+            Offset += ScanForInt(Input.Data + Offset, &Content->Quantity);
+
+            Offset += 1; // Eat the space.
+            Offset += ScanForColor(Input.Data + Offset, MAX_COLOR_LENGTH, Content->Color, &Content->ColorLength);
+
+            while ((Input.Data[Offset] != ',') && (Input.Data[Offset] != '.')) {
+                Offset += 1;
+            }
+
+            if (Input.Data[Offset] == ',') {
+                Offset += 2; // Eat the comma and the space.
+            } else if (Input.Data[Offset] == '.') {
+                Offset += 1; // Eat the space.
+            }
         }
+
+        Offset += 1; // Eat the newline.
     }
-    
-    printf("Part 1: %lld\n", SolvePart1(&Day07));
-    printf("Part 2: %lld\n", SolvePart2(&Day07));
+
+    printf("Part 1: %lld\n", SolvePart1(&Day));
+    printf("Part 2: %lld\n", SolvePart2(&Day));
 
     return EXIT_SUCCESS;
 }

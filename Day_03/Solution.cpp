@@ -5,15 +5,14 @@
 #define MAX_GRID_HEIGHT 512
 
 struct Day03_t {
-    Int32_t Width;
-    Int32_t Height;
+    Int64_t Width;
+    Int64_t Height;
     Char_t Grid[MAX_GRID_HEIGHT][MAX_GRID_WIDTH];
 };
 
-Int64_t TraverseMap(Day03_t* Day, Int32_t Dx, Int32_t Dy) {
-    Int32_t X = 0;
-    Int32_t Y = 0;
-
+Int64_t TraverseMap(Day03_t* Day, Int64_t Dx, Int64_t Dy) {
+    Int64_t X = 0;
+    Int64_t Y = 0;
     Int64_t Encounters = 0;
     while (Y < Day->Height) {
         if (Day->Grid[Y][X] == '#') {
@@ -46,28 +45,29 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         return EXIT_FAILURE;
     }
 
-    Day03_t Day03 = {};
-    Int32_t GridX = 0, GridY = 0;
-    for (Int32_t i = 0; i < Input.Length; ++i) {
+    Day03_t Day = {};
+    Int64_t GridX = 0;
+    Int64_t GridY = 0;
+    for (Int64_t i = 0; i < Input.Length; ++i) {
         if (Input.Data[i] == '\n') {
             GridX = 0;
             GridY += 1;
         } else {
-            Day03.Grid[GridY][GridX] = Input.Data[i];
+            Day.Grid[GridY][GridX] = Input.Data[i];
 
             GridX += 1;
-            if (GridX > Day03.Width) {
-                Day03.Width = GridX;
+            if (GridX > Day.Width) {
+                Day.Width = GridX;
             }
 
-            if (GridY > Day03.Height) {
-                Day03.Height = GridY;
+            if (GridY > Day.Height) {
+                Day.Height = GridY;
             }
         }
     }
 
-    printf("Part 1: %lld\n", SolvePart1(&Day03));
-    printf("Part 2: %lld\n", SolvePart2(&Day03));
+    printf("Part 1: %lld\n", SolvePart1(&Day));
+    printf("Part 2: %lld\n", SolvePart2(&Day));
 
     return EXIT_SUCCESS;
 }

@@ -1,29 +1,31 @@
 #include <cstdio>
 #include <Advent.h>
 
+#define MAX_PASSWORD_LENGTH 32
+
 struct Entry_t {
-    Int32_t Min;
-    Int32_t Max;
+    Int64_t Min;
+    Int64_t Max;
     Char_t Letter;
 
-    Int64_t Length;
-    Char_t* Password;
+    Int64_t PasswordLength;
+    Char_t Password[MAX_PASSWORD_LENGTH];
 };
 
 #define MAX_ENTRY_COUNT 1024
 
 struct Day02_t {
-    Int32_t Count;
+    Int64_t NumEntries;
     Entry_t Entries[MAX_ENTRY_COUNT];
 };
 
 Int64_t SolvePart1(Day02_t* Day) {
-    Int32_t ValidPasswords = 0;
-    for (Int32_t i = 0; i < Day->Count; ++i) {
+    Int64_t ValidPasswords = 0;
+    for (Int64_t i = 0; i < Day->NumEntries; ++i) {
         Entry_t* Entry = &Day->Entries[i];
 
-        Int32_t Occurrences = 0;
-        for (Int32_t j = 0; j < Entry->Length; ++j) {
+        Int64_t Occurrences = 0;
+        for (Int64_t j = 0; j < Entry->PasswordLength; ++j) {
             if (Entry->Password[j] == Entry->Letter) {
                 Occurrences += 1;
             }
@@ -39,12 +41,12 @@ Int64_t SolvePart1(Day02_t* Day) {
 }
 
 Int64_t SolvePart2(Day02_t* Day) {
-    Int32_t ValidPasswords = 0;
-    for (Int32_t i = 0; i < Day->Count; ++i) {
+    Int64_t ValidPasswords = 0;
+    for (Int64_t i = 0; i < Day->NumEntries; ++i) {
         Entry_t* Entry = &Day->Entries[i];
 
-        Int32_t Min = Entry->Min - 1;
-        Int32_t Max = Entry->Max - 1;
+        Int64_t Min = Entry->Min - 1;
+        Int64_t Max = Entry->Max - 1;
         if ((Entry->Password[Min] == Entry->Letter)
             ^ (Entry->Password[Max] == Entry->Letter)) {
                 ValidPasswords += 1;
@@ -54,92 +56,35 @@ Int64_t SolvePart2(Day02_t* Day) {
     return ValidPasswords;
 }
 
-Bool_t ParseChar(Char_t** String, Char_t* Value) {
-    Char_t* Search = *String;
-    if (!IsLetter(Search[0])) {
-        return false;
-    }
-
-    *Value = Search[0];
-    *String += 1;
-    return true;
-}
-
-Bool_t ParseInt(Char_t** String, Int32_t* Value) {
-    Char_t* Start = *String;
-    Char_t* Search = *String;
-    while (IsDigit(Search[0])) {
-        Search += 1;
-    }
-
-    if (Start == Search) {
-        return false;
-    }
-
-    /// @Robustness
-    /// Since we know the character after the value is always ignored,
-    /// we can replace it with a NULL so that atoi can parse the integer.
-    ///                                     Brian Rowlett, 2020-12-02
-    Search[0] = NULL;
-
-    *Value = atoi(Start);
-    *String = Search;
-    return true;
-}
-
-Bool_t ParseString(Char_t** String, Int64_t* Length, Char_t** Value) {
-    Char_t* Start = *String;
-    Char_t* Search = *String;
-    while (Search[0] != NULL) {
-        Search += 1;
-    }
-
-    *Length = Search - *String;
-    *Value = Start;
-    return true;
-}
-
 Int32_t main(Int32_t Argc, Char_t* Argv[]) {
     Input_t Input = {};
     if (!LoadInput(&Input, "Data\\Input.txt")) {
         return EXIT_FAILURE;
     }
 
-    Day02_t Day02 = {};
-    Char_t* Start = Input.Data;
-    for (Int32_t i = 0; i < Input.Length; ++i) {
-        if (Input.Data[i] == '\n') {
-            Input.Data[i] = NULL;
+    Day02_t Day = {};
+    Int64_t Offset = 0;
+    while (Offset < Input.Length) {
+        Day.NumEntries += 1;
+        Assert(Day.NumEntries <= MAX_ENTRY_COUNT);
+        Entry_t* Entry = &Day.Entries[Day.NumEntries - 1];
 
-            Day02.Count += 1;
-            Assert(Day02.Count <= MAX_ENTRY_COUNT);
-            Entry_t* Entry = &Day02.Entries[Day02.Count - 1];
+        Offset += ScanForInt(Input.Data + Offset, &Entry->Min);
 
-            if (!ParseInt(&Start, &Entry->Min)) {
-                Panic("Failed to parse min.");
-            }
+        Offset += 1; // Eat the hyphen.
+        Offset += ScanForInt(Input.Data + Offset, &Entry->Max);
 
-            Start += 1; // Eat the minus sign.
-            if (!ParseInt(&Start, &Entry->Max)) {
-                Panic("Failed to parse max.");
-            }
+        Offset += 1; // Eat the space.
+        Entry->Letter = Input.Data[Offset++];
 
-            Start += 1; // Eat the space.
-            if (!ParseChar(&Start, &Entry->Letter)) {
-                Panic("Failed to parse letter.");
-            }
+        Offset += 2; // Eat the colon and the space.
+        Offset += ScanForString(Input.Data + Offset, MAX_PASSWORD_LENGTH, Entry->Password, &Entry->PasswordLength);
 
-            Start += 2; // Eat the colon and the space.
-            if (!ParseString(&Start, &Entry->Length, &Entry->Password)) {
-                Panic("Failed to parse password.");
-            }
-
-            Start = &Input.Data[i + 1];
-        }
+        Offset += 1; // Eat the newline.
     }
 
-    printf("Part 1: %lld\n", SolvePart1(&Day02));
-    printf("Part 2: %lld\n", SolvePart2(&Day02));
+    printf("Part 1: %lld\n", SolvePart1(&Day));
+    printf("Part 2: %lld\n", SolvePart2(&Day));
     
     return EXIT_SUCCESS;
 }

@@ -1,22 +1,28 @@
 #include <cstdio>
 #include <Advent.h>
 
+#define MAX_NAME_LENGTH 8
+#define MAX_VALUE_LENGTH 16
+
 struct Field_t {
-    Char_t* Name;
-    Char_t* Value;
+    Int64_t NameLength;
+    Char_t Name[MAX_NAME_LENGTH];
+
+    Int64_t ValueLength;
+    Char_t Value[MAX_VALUE_LENGTH];
 };
 
 #define MAX_FIELD_COUNT 8
 
 struct Passport_t {
-    Int32_t Count;
+    Int64_t NumFields;
     Field_t Fields[MAX_FIELD_COUNT];
 };
 
 #define MAX_PASSPORT_COUNT 512
 
 struct Day04_t {
-    Int32_t Count;
+    Int64_t NumPassports;
     Passport_t Passports[MAX_PASSPORT_COUNT];
 };
 
@@ -31,11 +37,11 @@ struct Day04_t {
 
 Int64_t SolvePart1(Day04_t* Day) {
     Int64_t ValidPassports = 0;
-    for (Int32_t i = 0; i < Day->Count; ++i) {
+    for (Int64_t i = 0; i < Day->NumPassports; ++i) {
         Passport_t* Passport = &Day->Passports[i];
 
-        Int32_t FieldMask = 0;
-        for (Int32_t j = 0; j < Passport->Count; ++j) {
+        Int64_t FieldMask = 0;
+        for (Int64_t j = 0; j < Passport->NumFields; ++j) {
             Field_t* Field = &Passport->Fields[j];
 
             if (StringEquals(Field->Name, "byr")) {
@@ -71,36 +77,36 @@ Int64_t SolvePart1(Day04_t* Day) {
 
 Int64_t SolvePart2(Day04_t* Day) {
     Int64_t ValidPassports = 0;
-    for (Int32_t i = 0; i < Day->Count; ++i) {
+    for (Int64_t i = 0; i < Day->NumPassports; ++i) {
         Passport_t* Passport = &Day->Passports[i];
 
-        Int32_t FieldMask = 0;
-        for (Int32_t j = 0; j < Passport->Count; ++j) {
+        Int64_t FieldMask = 0;
+        for (Int64_t j = 0; j < Passport->NumFields; ++j) {
             Field_t* Field = &Passport->Fields[j];
 
             if (StringEquals(Field->Name, "byr")) {
                 if (StringLength(Field->Value) == BYR_LENGTH) {
-                    Int32_t Year = atoi(Field->Value);
+                    Int64_t Year = atoi(Field->Value);
                     if ((1920 <= Year) && (Year <= 2002)) {
                         FieldMask |= BYR_BIT;
                     }
                 }
             } else if (StringEquals(Field->Name, "iyr")) {
                 if (StringLength(Field->Value) == IYR_LENGTH) {
-                    Int32_t Year = atoi(Field->Value);
+                    Int64_t Year = atoi(Field->Value);
                     if ((2010 <= Year) && (Year <= 2020)) {
                         FieldMask |= IYR_BIT;
                     }
                 }
             } else if (StringEquals(Field->Name, "eyr")) {
                 if (StringLength(Field->Value) == EYR_LENGTH) {
-                    Int32_t Year = atoi(Field->Value);
+                    Int64_t Year = atoi(Field->Value);
                     if ((2020 <= Year) && (Year <= 2030)) {
                         FieldMask |= EYR_BIT;
                     }
                 }
             } else if (StringEquals(Field->Name, "hgt")) {
-                Int32_t Length = 0;
+                Int64_t Length = 0;
                 while (IsDigit(Field->Value[Length])) {
                     Length += 1;
                 }
@@ -109,14 +115,14 @@ Int64_t SolvePart2(Day04_t* Day) {
                 if (StringEquals(Units, "cm")) {
                     Field->Value[Length] = NULL; // @Cleanup
 
-                    Int32_t Height = atoi(Field->Value);
+                    Int64_t Height = atoi(Field->Value);
                     if ((150 <= Height) && (Height <= 193)) {
                         FieldMask |= HGT_BIT;
                     }
                 } else if (StringEquals(Units, "in")) {
                     Field->Value[Length] = NULL; // @Cleanup
 
-                    Int32_t Height = atoi(Field->Value);
+                    Int64_t Height = atoi(Field->Value);
                     if ((59 <= Height) && (Height <= 76)) {
                         FieldMask |= HGT_BIT;
                     }
@@ -125,7 +131,7 @@ Int64_t SolvePart2(Day04_t* Day) {
                 if (StringLength(Field->Value) == HCL_LENGTH) {
                     if (Field->Value[0] == '#') {
                         FieldMask |= HCL_BIT;
-                        for (Int32_t z = 1; z < HCL_LENGTH; ++z) {
+                        for (Int64_t z = 1; z < HCL_LENGTH; ++z) {
                             if (!IsHexDigit(Field->Value[z])) {
                                 FieldMask &= ~HCL_BIT;
                                 break;
@@ -152,7 +158,7 @@ Int64_t SolvePart2(Day04_t* Day) {
             } else if (StringEquals(Field->Name, "pid")) {
                 if (StringLength(Field->Value) == PID_LENGTH) {
                     FieldMask |= PID_BIT;
-                    for (Int32_t z = 0; z < PID_LENGTH; ++z) {
+                    for (Int64_t z = 0; z < PID_LENGTH; ++z) {
                         if (!IsDigit(Field->Value[z])) {
                             FieldMask &= ~PID_BIT;
                             break;
@@ -176,42 +182,42 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         return EXIT_FAILURE;
     }
 
-    Day04_t Day04 = {};
-    Field_t NewField = {};
-    Passport_t NewPassport = {};
-    Char_t* Search = &Input.Data[0];
-    for (Int32_t i = 0; i < Input.Length; ++i) {
-        if (Input.Data[i] == ':') {
-            Input.Data[i] = NULL;
+    Day04_t Day = {};
+    Int64_t Offset = 0;
+    while (Offset < Input.Length) {
+        if (Offset == 0) {
+            Day.NumPassports += 1;
+            Assert(Day.NumPassports <= MAX_PASSPORT_COUNT);
+        } else if (Input.Data[Offset] == '\n') {
+            Day.NumPassports += 1;
+            Assert(Day.NumPassports <= MAX_PASSPORT_COUNT);
 
-            NewField.Name = Search;
-            Search = &Input.Data[i + 1];
-        } else if ((Input.Data[i] == ' ') || (Input.Data[i] == '\n')) {
-            Input.Data[i] = NULL;
-
-            NewField.Value = Search;
-            Search = &Input.Data[i + 1];
-
-            NewPassport.Count += 1;
-            Assert(NewPassport.Count <= MAX_FIELD_COUNT);
-            NewPassport.Fields[NewPassport.Count - 1] = NewField;
-
-            if ((i == (Input.Length - 1)) || (Input.Data[i + 1] == '\n')) {
-                i += 1;
-                Search = &Input.Data[i + 1];
-
-                Day04.Count += 1;
-                Assert(Day04.Count <= MAX_PASSPORT_COUNT);
-                Day04.Passports[Day04.Count - 1] = NewPassport;
-
-                NewField = {};
-                NewPassport = {};
-            }
+            Offset += 1; // Eat the newline.
         }
+
+        Passport_t* Passport = &Day.Passports[Day.NumPassports - 1];
+
+        Passport->NumFields += 1;
+        Assert(Passport->NumFields <=MAX_FIELD_COUNT);
+        Field_t* Field = &Passport->Fields[Passport->NumFields - 1];
+
+        for (Int64_t i = 0; i < MAX_NAME_LENGTH; ++i, ++Offset) {
+            if (Input.Data[Offset] == ':') {
+                break;
+            }
+            
+            Field->NameLength += 1;
+            Field->Name[i] = Input.Data[Offset];
+        }
+
+        Offset += 1; // Eat the colon.
+        Offset += ScanForString(Input.Data + Offset, MAX_VALUE_LENGTH, Field->Value, &Field->ValueLength);
+
+        Offset += 1; // Eat the space or the newline.
     }
 
-    printf("Part 1: %lld\n", SolvePart1(&Day04));
-    printf("Part 2: %lld\n", SolvePart2(&Day04));
+    printf("Part 1: %lld\n", SolvePart1(&Day));
+    printf("Part 2: %lld\n", SolvePart2(&Day));
 
     return EXIT_SUCCESS;
 }

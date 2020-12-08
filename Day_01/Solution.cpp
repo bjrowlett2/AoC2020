@@ -4,13 +4,13 @@
 #define MAX_ENTRY_COUNT 256
 
 struct Day01_t {
-    Int32_t Count;
-    Int32_t Entries[MAX_ENTRY_COUNT];
+    Int64_t NumEntries;
+    Int64_t Entries[MAX_ENTRY_COUNT];
 };
 
 Int64_t SolvePart1(Day01_t* Day) {
-    for (Int32_t i = 0; i < Day->Count; ++i) {
-        for (Int32_t j = i; j < Day->Count; ++j) {
+    for (Int64_t i = 0; i < Day->NumEntries; ++i) {
+        for (Int64_t j = i; j < Day->NumEntries; ++j) {
             if (Day->Entries[i] + Day->Entries[j] == 2020) {
                 return Day->Entries[i] * Day->Entries[j];
             }
@@ -21,9 +21,9 @@ Int64_t SolvePart1(Day01_t* Day) {
 }
 
 Int64_t SolvePart2(Day01_t* Day) {
-    for (Int32_t i = 0; i < Day->Count; ++i) {
-        for (Int32_t j = i; j < Day->Count; ++j) {
-            for (Int32_t k = j; k < Day->Count; ++k) {
+    for (Int64_t i = 0; i < Day->NumEntries; ++i) {
+        for (Int64_t j = i; j < Day->NumEntries; ++j) {
+            for (Int64_t k = j; k < Day->NumEntries; ++k) {
                 if (Day->Entries[i] + Day->Entries[j] + Day->Entries[k] == 2020) {
                     return Day->Entries[i] * Day->Entries[j] * Day->Entries[k];
                 }
@@ -40,22 +40,20 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         return EXIT_FAILURE;
     }
 
-    Day01_t Day01 = {};
-    Char_t* String = Input.Data;
-    for (Int32_t i = 0; i < Input.Length; ++i) {
-        if (Input.Data[i] == '\n') {
-            Input.Data[i] = NULL;
+    Day01_t Day = {};
+    Int64_t Offset = 0;
+    while (Offset < Input.Length) {
+        Day.NumEntries += 1;
+        Assert(Day.NumEntries <= MAX_ENTRY_COUNT);
+        Int64_t* Entry = &Day.Entries[Day.NumEntries - 1];
 
-            Day01.Count += 1;
-            Assert(Day01.Count <= MAX_ENTRY_COUNT);
-            Day01.Entries[Day01.Count - 1] = atoi(String);
+        Offset += ScanForInt(Input.Data + Offset, Entry);
 
-            String = &Input.Data[i + 1];
-        }
+        Offset += 1; // Eat the newline.
     }
 
-    printf("Part 1: %lld\n", SolvePart1(&Day01));
-    printf("Part 2: %lld\n", SolvePart2(&Day01));
+    printf("Part 1: %lld\n", SolvePart1(&Day));
+    printf("Part 2: %lld\n", SolvePart2(&Day));
     
     return EXIT_SUCCESS;
 }
