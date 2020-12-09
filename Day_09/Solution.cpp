@@ -8,29 +8,28 @@ struct Day09_t {
     Int64_t Numbers[MAX_NUMBER_COUNT];
 };
 
+Bool_t IsValid(Day09_t* Day, Int64_t Upper, Int64_t Target) {
+    Int64_t Lower = Upper - 25;
+    for (Int64_t i = Lower; i < Upper; ++i) {
+        Int64_t A = Day->Numbers[i];
+
+        for (Int64_t j = i + 1; j < Upper; ++j) {
+            Int64_t B = Day->Numbers[j];
+
+            if ((A + B) == Target) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 Int64_t SolvePart1(Day09_t* Day) {
     for (Int64_t i = 25; i < Day->NumNumbers; ++i) {
         Int64_t Target = Day->Numbers[i];
 
-        Bool_t Found = false;
-        for (Int64_t x = i - 25; x < i; ++x) {
-            Int64_t A = Day->Numbers[x];
-
-            for (Int64_t y = x; y < i; ++y) {
-                Int64_t B = Day->Numbers[y];
-
-                if ((A + B) == Target) {
-                    Found = true;
-                    break; // Early exit.
-                }
-            }
-
-            if (Found) {
-                break; // Early exit.
-            }
-        }
-        
-        if (!Found) {
+        if (!IsValid(Day, i, Target)) {
             return Target;
         }
     }
