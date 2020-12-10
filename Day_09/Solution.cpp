@@ -38,7 +38,7 @@ Int64_t SolvePart1(Day09_t* Day) {
 }
 
 Int64_t SolvePart2(Day09_t* Day) {
-    Int64_t Target = 393911906;
+    Int64_t Target = SolvePart1(Day);
     for (Int64_t i = 0; i < Day->NumNumbers; ++i) {
         Int64_t Sum = Day->Numbers[i];
 
