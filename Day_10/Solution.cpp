@@ -21,9 +21,9 @@ void SortAdapters(Day10_t* Day) {
 }
 
 Int64_t SolvePart1(Day10_t* Day) {
-    Int64_t OneJoltDifferences = 1;
+    Int64_t OneJoltDifferences = 0;
     Int64_t ThreeJoltDifferences = 1;
-    for (Int64_t i = 1; i < Day->NumAdapters; ++i) {
+    for (Int64_t i = 0; i < Day->NumAdapters; ++i) {
         Int64_t Difference = Day->Adapters[i] - Day->Adapters[i - 1];
         if (Difference == 1) {
             OneJoltDifferences += 1;
@@ -37,7 +37,7 @@ Int64_t SolvePart1(Day10_t* Day) {
 
 Int64_t SolvePart2(Day10_t* Day) {
     Int64_t Permutations[MAX_ADAPTER_COUNT] = {};
-    for (Int64_t i = 0; i < Day->NumAdapters; ++i) {
+    for (Int64_t i = 1; i < Day->NumAdapters; ++i) {
         if (Day->Adapters[i] <= 3) {
             Permutations[i] = 1;
         }
@@ -61,7 +61,7 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         return EXIT_FAILURE;
     }
 
-    Day10_t Day = {};
+    Day10_t Day = {1};
     Int64_t Offset = 0;
     while (Offset < Input.Length) {
         Day.NumAdapters += 1;
