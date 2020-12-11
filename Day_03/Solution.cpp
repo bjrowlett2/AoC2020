@@ -51,17 +51,17 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
     for (Int64_t i = 0; i < Input.Length; ++i) {
         if (Input.Data[i] == '\n') {
             GridX = 0;
+            
             GridY += 1;
+            if (GridY > Day.Height) {
+                Day.Height = GridY;
+            }
         } else {
             Day.Grid[GridY][GridX] = Input.Data[i];
 
             GridX += 1;
             if (GridX > Day.Width) {
                 Day.Width = GridX;
-            }
-
-            if (GridY > Day.Height) {
-                Day.Height = GridY;
             }
         }
     }
