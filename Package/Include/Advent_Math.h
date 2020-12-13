@@ -11,4 +11,19 @@ Data_t Max(Data_t A, Data_t B) {
     return (A >= B) ? A : B;
 }
 
+struct Gcd_t {
+    Int64_t R;
+    Int64_t X;
+    Int64_t Y;
+};
+
+Gcd_t ExtendedGcd(Int64_t A, Int64_t B) {
+    if (A == 0) {
+        return { B, 0, 1 };
+    }
+
+    Gcd_t Gcd = ExtendedGcd(B % A, A);
+    return { Gcd.R, Gcd.Y - (B / A) * Gcd.X, Gcd.X };
+}
+
 #endif // Advent_Math_h
