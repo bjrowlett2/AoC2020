@@ -7,9 +7,9 @@ enum Kind_t {
 };
 
 struct MaskInstruction_t {
-    Int64_t Ones;
-    Int64_t Zeroes;
-    Int64_t Exes;
+    Int64_t Set;
+    Int64_t Reset;
+    Int64_t Floating;
 };
 
 struct MemoryInstruction_t {
@@ -41,8 +41,8 @@ Int64_t SolvePart1(Day14_t* Day) {
         if (Instruction->Kind == KIND_MASK) {
             Mask = Instruction->Mask;
         } else if (Instruction->Kind == KIND_MEMORY) {
-            Int64_t Value = Mask.Ones | (~Mask.Zeroes & Instruction->Memory.Value);
-            Add(Memory, Instruction->Memory.Address, Value);
+            Add(Memory, Instruction->Memory.Address,
+                Mask.Set | (~Mask.Reset & Instruction->Memory.Value));
         }
     }
 
@@ -62,13 +62,12 @@ Bool_t IsBitSet(Int64_t Value, Int64_t Bit) {
 }
 
 Int64_t CountBits(Int64_t Value, Int64_t Size) {
-    Int64_t Sum = 0;
+    Int64_t Total = 0;
     for (Int64_t i = 0; i < Size; ++i) {
-        Sum += Value & 1i64;
-        Value = Value >> 1i64;
+        Total += (Value >> i) & 1i64;
     }
 
-    return Sum;
+    return Total;
 }
 
 Int64_t SolvePart2(Day14_t* Day) {
@@ -82,10 +81,10 @@ Int64_t SolvePart2(Day14_t* Day) {
         if (Instruction->Kind == KIND_MASK) {
             Mask = Instruction->Mask;
         } else if (Instruction->Kind == KIND_MEMORY) {
-            Int64_t Permutations = 1i64 << CountBits(Mask.Exes, 36);
+            Int64_t Permutations = 1i64 << CountBits(Mask.Floating, 36);
 
             for (Int64_t Config = 0; Config < Permutations; ++Config) {
-                Int64_t Address = Mask.Ones | Instruction->Memory.Address;
+                Int64_t Address = Mask.Set | Instruction->Memory.Address;
 
                 ///
                 /// Note:
@@ -98,11 +97,11 @@ Int64_t SolvePart2(Day14_t* Day) {
                 ///
 
                 for (Int64_t Shift = 0, n = 0; Shift < 36; ++Shift) {
-                    if (IsBitSet(Mask.Exes, Shift)) {
+                    if (IsBitSet(Mask.Floating, Shift)) {
                         Int64_t Target = 1i64 << Shift;
-                        Int64_t Expanded = ((Config >> n) & 1i64) << Shift;
+                        Int64_t Expanded = (Config >> n) << Shift;
 
-                        Address = (Address & ~Target) | Expanded & Target;
+                        Address = (Address & ~Target) | (Expanded & Target);
                         n += 1;
                     }
                 }
@@ -123,7 +122,7 @@ Int64_t SolvePart2(Day14_t* Day) {
     return Total;
 }
 
-#define MAX_OP_LENGTH 8
+#define MAX_OPERATION_LENGTH 8
 
 Int32_t main(Int32_t Argc, Char_t* Argv[]) {
     Input_t Input = {};
@@ -139,8 +138,8 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
         Instruction_t* Instruction = &Day.Instructions[Day.NumInstructions - 1];
 
         Int64_t OpLength = 0;
-        Char_t Op[MAX_OP_LENGTH] = {};
-        Offset += ScanForEnglish(Input.Data + Offset, MAX_OP_LENGTH, Op, &OpLength);
+        Char_t Op[MAX_OPERATION_LENGTH] = {};
+        Offset += ScanForEnglish(Input.Data + Offset, MAX_OPERATION_LENGTH, Op, &OpLength);
 
         if (StringEquals(Op, "mask")) {
             Instruction->Kind = KIND_MASK;
@@ -150,11 +149,11 @@ Int32_t main(Int32_t Argc, Char_t* Argv[]) {
             for (Int64_t i = 0; i < 36; ++i, ++Offset) {
                 Int64_t Shift = 36 - i - 1;
                 if (Input.Data[Offset] == '1') {
-                    Instruction->Mask.Ones |= (1i64 << Shift);
+                    Instruction->Mask.Set |= (1i64 << Shift);
                 } else if (Input.Data[Offset] == '0') {
-                    Instruction->Mask.Zeroes |= (1i64 << Shift);
+                    Instruction->Mask.Reset |= (1i64 << Shift);
                 } else if (Input.Data[Offset] == 'X') {
-                    Instruction->Mask.Exes |= (1i64 << Shift);
+                    Instruction->Mask.Floating |= (1i64 << Shift);
                 }
             }
 
