@@ -91,6 +91,10 @@ Bool_t IsVisible(Day11_t* Day, Int64_t X, Int64_t Y, Int64_t Dx, Int64_t Dy) {
         X += Dx;
         Y += Dy;
 
+        if (!InBounds(Day, X, Y)) {
+            return false;
+        }
+
         if (Day->Grid[Y][X] == '#') {
             return true;
         } else if (Day->Grid[Y][X] == 'L') {
