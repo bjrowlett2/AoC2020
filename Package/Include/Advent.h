@@ -1,4 +1,5 @@
 #include "Advent_Assert.h"
+#include "Advent_HashTable.h"
 #include "Advent_Input.h"
 #include "Advent_Math.h"
 #include "Advent_Panic.h"

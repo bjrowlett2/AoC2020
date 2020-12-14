@@ -5,7 +5,8 @@
 #include "Advent_Types.h"
 
 Bool_t IsAlpha(Char_t C) {
-    return ('a' <= C) && (C <= 'z');
+    return (('a' <= C) && (C <= 'z'))
+        || (('A' <= C) && (C <= 'Z'));
 }
 
 Bool_t IsDigit(Char_t C) {
@@ -84,18 +85,6 @@ Int64_t ScanForInt(Char_t* Buffer, Int64_t* Value) {
 
     Assert(Buffer != End);
     return End - Buffer;
-
-    /*Char_t Storage[MAX_INT_LENGTH] = {};
-    for (Int64_t Index = 0; Index < MAX_INT_LENGTH-1; ++Index) {
-        if (!IsDigit(Buffer[Index])) {
-            *Value = atoi(Storage);
-            return Index;
-        }
-
-        Storage[Index] = Buffer[Index];
-    }
-
-    Panic("Could not find an int.");*/
 }
 
 Int64_t ScanForString(Char_t* Buffer, Int64_t BufferLength, Char_t* Value, Int64_t* Length) {
@@ -109,6 +98,19 @@ Int64_t ScanForString(Char_t* Buffer, Int64_t BufferLength, Char_t* Value, Int64
     }
 
     Panic("Could not find a string.");
+}
+
+Int64_t ScanForEnglish(Char_t* Buffer, Int64_t BufferLength, Char_t* Value, Int64_t* Length) {
+    for (Int64_t Index = 0; Index < BufferLength-1; ++Index) {
+        if (!IsAlpha(Buffer[Index])) {
+            *Length = Index;
+            return Index;
+        }
+
+        Value[Index] = Buffer[Index];
+    }
+
+    Panic("Could not find an English word.");
 }
 
 #endif // Advent_String_h
