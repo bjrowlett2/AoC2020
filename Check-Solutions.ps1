@@ -39,3 +39,4 @@ Check-Solution -Day "13" -Solution1 3966 -Solution2 800177252346225
 Check-Solution -Day "14" -Solution1 13727901897109 -Solution2 5579916171823
 Check-Solution -Day "15" -Solution1 1194 -Solution2 48710
 Check-Solution -Day "16" -Solution1 24110 -Solution2 6766503490793
+Check-Solution -Day "17" -Solution1 306 -Solution2 2572
