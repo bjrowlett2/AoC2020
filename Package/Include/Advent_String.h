@@ -22,6 +22,18 @@ Bool_t IsAlphaNumeric(Char_t C) {
     return IsAlpha(C) || IsDigit(C);
 }
 
+Bool_t IsOperator(Char_t C) {
+    return (C == '+') || (C == '*');
+}
+
+Bool_t IsOpenParenthesis(Char_t C) {
+    return C == '(';
+}
+
+Bool_t IsCloseParenthesis(Char_t C) {
+    return C == ')';
+}
+
 Bool_t IsWhitespace(Char_t C) {
     return (C == ' ')
         || (C == '\n')
