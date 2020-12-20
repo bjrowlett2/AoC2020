@@ -1,6 +1,9 @@
 #ifndef Advent_Stack_h
 #define Advent_Stack_h 1
 
+#include "Advent_Assert.h"
+#include "Advent_Types.h"
+
 #define MAX_STACK_ENTRY_COUNT 1024
 
 template <typename Data_t>

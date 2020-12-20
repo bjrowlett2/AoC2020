@@ -1,6 +1,8 @@
 #ifndef Advent_Math_h
 #define Advent_Math_h 1
 
+#include "Advent_Types.h"
+
 template <typename Data_t>
 Data_t Abs(Data_t Value) {
     return (Value >= 0) ? Value : -Value;
@@ -16,6 +18,10 @@ struct Gcd_t {
     Int64_t X;
     Int64_t Y;
 };
+
+Int64_t Truncate(Float64_t Value) {
+    return static_cast<Int64_t>(Value);
+}
 
 Gcd_t ExtendedGcd(Int64_t A, Int64_t B) {
     if (A == 0) {

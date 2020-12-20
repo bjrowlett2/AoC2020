@@ -1,7 +1,6 @@
 #ifndef Advent_HashTable_h
 #define Advent_HashTable_h 1
 
-#include "Advent_String.h"
 #include "Advent_Types.h"
 
 template <typename Key_t, typename Data_t>
