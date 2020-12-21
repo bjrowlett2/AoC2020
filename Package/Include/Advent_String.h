@@ -78,6 +78,17 @@ Bool_t StringEquals(Char_t const* A, Char_t const* B) {
     return false;
 }
 
+Int64_t StringCompare(Char_t const* A, Char_t const* B) {
+    if (A && B) {
+        while (*A && *B && (*A == *B)) {
+            A += 1;
+            B += 1;
+        }
+    }
+
+    return (*A - *B);
+}
+
 Bool_t StringStartsWith(Char_t const* A, Char_t const* B) {
     if (A && B) {
         while (*A && *B && (*A == *B)) {
