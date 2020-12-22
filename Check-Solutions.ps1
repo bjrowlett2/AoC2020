@@ -44,3 +44,4 @@ Check-Solution -Day "18" -Solution1 "24650385570008" -Solution2 "158183007916215
 Check-Solution -Day "19" -Solution1 "120" -Solution2 "350"
 Check-Solution -Day "20" -Solution1 "23386616781851" -Solution2 "2376"
 Check-Solution -Day "21" -Solution1 "2374" -Solution2 "fbtqkzc,jbbsjh,cpttmnv,ccrbr,tdmqcl,vnjxjg,nlph,mzqjxq"
+Check-Solution -Day "22" -Solution1 "31269" -Solution2 "31151"
