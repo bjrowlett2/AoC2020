@@ -1,6 +1,7 @@
 param([Boolean] $RebuildAll = $true)
 
 if ($RebuildAll) {
+    Write-Host "Rebuilding all..." -ForegroundColor Yellow
     .\BuildAll.cmd > $null 2> $null
 }
 
