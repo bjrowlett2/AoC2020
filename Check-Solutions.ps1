@@ -48,3 +48,4 @@ Check-Solution -Day "21" -Solution1 "2374" -Solution2 "fbtqkzc,jbbsjh,cpttmnv,cc
 Check-Solution -Day "22" -Solution1 "31269" -Solution2 "31151"
 Check-Solution -Day "23" -Solution1 "72496583" -Solution2 "41785843847"
 Check-Solution -Day "24" -Solution1 "289" -Solution2 "3551"
+Check-Solution -Day "25" -Solution1 "10548634" -Solution2 "0"
